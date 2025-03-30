@@ -1,0 +1,430 @@
+{
+    "flood": {
+        "disaster_type": "flood",
+        "disaster_scale": {
+            "affected_area": "100 square kilometers",
+            "population_affected": "50,000",
+            "economic_loss": "10 million USD"
+        },
+        "severity": {
+            "destruction_level": "severe",
+            "casualties": "100",
+            "spread_speed": "1 meter per hour"
+        },
+        "time_and_location": {
+            "time": "2025-03-15 14:00",
+            "location": "City X, Latitude: 34.05, Longitude: -118.25",
+            "weather": "heavy rain"
+        },
+        "resources_and_capabilities": {
+            "available_resources": {
+                "rescue_teams": 5,
+                "medical_equipment": 10,
+                "food_and_water": "sufficient for 3 days"
+            },
+            "infrastructure_status": {
+                "transportation": "partially damaged",
+                "communication": "functional",
+                "power_supply": "interrupted"
+            }
+        },
+        "policy_goals": {
+            "rescue_priority": "life first",
+            "short_term_goals": ["evacuate population", "provide medical aid"],
+            "long_term_goals": ["rebuild infrastructure", "restore economy"]
+        }
+    },
+    "earthquake": {
+        "disaster_type": "earthquake",
+        "disaster_scale": {
+            "magnitude": "7.0",
+            "affected_area": "50 square kilometers",
+            "population_affected": "30,000"
+        },
+        "severity": {
+            "destruction_level": "moderate",
+            "casualties": "50",
+            "aftershocks": "possible"
+        },
+        "time_and_location": {
+            "time": "2025-03-16 08:00",
+            "location": "City Y, Latitude: 36.12, Longitude: -115.17"
+        },
+        "resources_and_capabilities": {
+            "available_resources": {
+                "rescue_teams": 3,
+                "medical_equipment": 8,
+                "food_and_water": "sufficient for 2 days"
+            },
+            "infrastructure_status": {
+                "transportation": "functional",
+                "communication": "interrupted",
+                "power_supply": "partially damaged"
+            }
+        },
+        "policy_goals": {
+            "rescue_priority": "life first",
+            "short_term_goals": ["search and rescue", "provide shelter"],
+            "long_term_goals": ["rebuild infrastructure", "restore services"]
+        }
+    },
+    "fire": {
+        "disaster_type": "fire",
+        "disaster_scale": {
+            "affected_area": "20 square kilometers",
+            "population_affected": "10,000"
+        },
+        "severity": {
+            "destruction_level": "high",
+            "casualties": "20",
+            "spread_speed": "5 meters per minute"
+        },
+        "time_and_location": {
+            "time": "2025-03-17 12:00",
+            "location": "City Z, Latitude: 37.77, Longitude: -122.42",
+            "weather": "dry and windy"
+        },
+        "resources_and_capabilities": {
+            "available_resources": {
+                "firefighting_teams": 10,
+                "medical_equipment": 5,
+                "food_and_water": "sufficient for 1 day"
+            },
+            "infrastructure_status": {
+                "transportation": "functional",
+                "communication": "functional",
+                "power_supply": "interrupted"
+            }
+        },
+        "policy_goals": {
+            "rescue_priority": "life first",
+            "short_term_goals": ["evacuate population", "contain fire"],
+            "long_term_goals": ["rebuild infrastructure", "restore environment"]
+        }
+    },
+  "cyclone": {
+        "disaster_type": "cyclone",
+        "disaster_scale": {
+            "wind_speed": "200 km/h",
+            "affected_area": "200 square kilometers",
+            "population_affected": "100,000",
+            "economic_loss": "50 million USD"
+        },
+        "severity": {
+            "destruction_level": "severe",
+            "casualties": "200",
+            "storm_surge_height": "5 meters"
+        },
+        "time_and_location": {
+            "time": "2025-03-18 06:00",
+            "location": "Coastal City A, Latitude: 22.54, Longitude: 114.00",
+            "weather": "heavy rain and strong winds"
+        },
+        "resources_and_capabilities": {
+            "available_resources": {
+                "rescue_teams": 8,
+                "medical_equipment": 12,
+                "food_and_water": "sufficient for 5 days"
+            },
+            "infrastructure_status": {
+                "transportation": "severely damaged",
+                "communication": "partially functional",
+                "power_supply": "interrupted"
+            }
+        },
+        "policy_goals": {
+            "rescue_priority": "life first",
+            "short_term_goals": ["evacuate coastal population", "provide emergency shelter"],
+            "long_term_goals": ["rebuild coastal defenses", "restore infrastructure"]
+        }
+    },
+    "drought": {
+        "disaster_type": "drought",
+        "disaster_scale": {
+            "duration": "6 months",
+            "affected_area": "500 square kilometers",
+            "population_affected": "200,000",
+            "economic_loss": "30 million USD"
+        },
+        "severity": {
+            "destruction_level": "moderate",
+            "casualties": "0",
+            "water_shortage": "severe"
+        },
+        "time_and_location": {
+            "time": "2025-03-19",
+            "location": "Region B, Latitude: 30.57, Longitude: 114.29",
+            "weather": "hot and dry"
+        },
+        "resources_and_capabilities": {
+            "available_resources": {
+                "water_trucks": 15,
+                "medical_equipment": 5,
+                "food_and_water": "sufficient for 1 week"
+            },
+            "infrastructure_status": {
+                "transportation": "functional",
+                "communication": "functional",
+                "power_supply": "functional"
+            }
+        },
+        "policy_goals": {
+            "rescue_priority": "life first",
+            "short_term_goals": ["provide water supplies", "medical aid for heat-related illnesses"],
+            "long_term_goals": ["develop water conservation plans", "improve irrigation systems"]
+        }
+    },
+    "tsunami": {
+        "disaster_type": "tsunami",
+        "disaster_scale": {
+            "wave_height": "10 meters",
+            "affected_area": "150 square kilometers",
+            "population_affected": "80,000",
+            "economic_loss": "70 million USD"
+        },
+        "severity": {
+            "destruction_level": "extreme",
+            "casualties": "300",
+            "aftershock_risk": "low"
+        },
+        "time_and_location": {
+            "time": "2025-03-20 10:00",
+            "location": "Coastal City C, Latitude: 35.69, Longitude: 139.69",
+            "weather": "clear"
+        },
+        "resources_and_capabilities": {
+            "available_resources": {
+                "rescue_teams": 10,
+                "medical_equipment": 15,
+                "food_and_water": "sufficient for 4 days"
+            },
+            "infrastructure_status": {
+                "transportation": "severely damaged",
+                "communication": "interrupted",
+                "power_supply": "interrupted"
+            }
+        },
+        "policy_goals": {
+            "rescue_priority": "life first",
+            "short_term_goals": ["search and rescue", "provide emergency shelter"],
+            "long_term_goals": ["rebuild coastal infrastructure", "enhance tsunami warning systems"]
+        }
+    },
+  "avalanche": {
+        "disaster_type": "avalanche",
+        "disaster_scale": {
+            "volume": "100,000 cubic meters",
+            "affected_area": "10 square kilometers",
+            "population_affected": "2,000",
+            "economic_loss": "5 million USD"
+        },
+        "severity": {
+            "destruction_level": "high",
+            "casualties": "30",
+            "spread_speed": "100 meters per second"
+        },
+        "time_and_location": {
+            "time": "2025-03-21 09:00",
+            "location": "Mountainous Region D, Latitude: 45.42, Longitude: 7.45",
+            "weather": "heavy snowfall"
+        },
+        "resources_and_capabilities": {
+            "available_resources": {
+                "rescue_teams": 4,
+                "medical_equipment": 6,
+                "food_and_water": "sufficient for 2 days"
+            },
+            "infrastructure_status": {
+                "transportation": "severely damaged",
+                "communication": "partially functional",
+                "power_supply": "interrupted"
+            }
+        },
+        "policy_goals": {
+            "rescue_priority": "life first",
+            "short_term_goals": ["search and rescue", "provide medical aid"],
+            "long_term_goals": ["rebuild mountain infrastructure", "enhance avalanche warning systems"]
+        }
+    },
+    "volcanic_eruption": {
+        "disaster_type": "volcanic_eruption",
+        "disaster_scale": {
+            "volcanic_explosivity_index": "4",
+            "affected_area": "250 square kilometers",
+            "population_affected": "150,000",
+            "economic_loss": "100 million USD"
+        },
+        "severity": {
+            "destruction_level": "extreme",
+            "casualties": "400",
+            "ashfall_thickness": "10 centimeters"
+        },
+        "time_and_location": {
+            "time": "2025-03-22 15:00",
+            "location": "Volcanic Region E, Latitude: 19.43, Longitude: -155.28",
+            "weather": "clear"
+        },
+        "resources_and_capabilities": {
+            "available_resources": {
+                "rescue_teams": 12,
+                "medical_equipment": 20,
+                "food_and_water": "sufficient for 7 days"
+            },
+            "infrastructure_status": {
+                "transportation": "severely damaged",
+                "communication": "partially functional",
+                "power_supply": "interrupted"
+            }
+        },
+        "policy_goals": {
+            "rescue_priority": "life first",
+            "short_term_goals": ["evacuate population", "provide emergency shelter"],
+            "long_term_goals": ["rebuild infrastructure", "monitor volcanic activity"]
+        }
+    },
+    "landslide": {
+        "disaster_type": "landslide",
+        "disaster_scale": {
+            "volume": "50,000 cubic meters",
+            "affected_area": "5 square kilometers",
+            "population_affected": "8,000",
+            "economic_loss": "8 million USD"
+        },
+        "severity": {
+            "destruction_level": "moderate",
+            "casualties": "50",
+            "spread_speed": "10 meters per minute"
+        },
+        "time_and_location": {
+            "time": "2025-03-23 18:00",
+            "location": "Hilly Region F, Latitude: 22.39, Longitude: 114.11",
+            "weather": "heavy rain"
+        },
+        "resources_and_capabilities": {
+            "available_resources": {
+                "rescue_teams": 6,
+                "medical_equipment": 10,
+                "food_and_water": "sufficient for 3 days"
+            },
+            "infrastructure_status": {
+                "transportation": "partially damaged",
+                "communication": "functional",
+                "power_supply": "interrupted"
+            }
+        },
+        "policy_goals": {
+            "rescue_priority": "life first",
+            "short_term_goals": ["search and rescue", "provide medical aid"],
+            "long_term_goals": ["rebuild infrastructure", "implement slope stabilization measures"]
+        }
+    },
+   "heatwave": {
+        "disaster_type": "heatwave",
+        "disaster_scale": {
+            "temperature": "45°C",
+            "duration": "10 days",
+            "affected_area": "300 square kilometers",
+            "population_affected": "120,000",
+            "economic_loss": "25 million USD"
+        },
+        "severity": {
+            "destruction_level": "moderate",
+            "casualties": "150",
+            "heat-related_illnesses": "high"
+        },
+        "time_and_location": {
+            "time": "2025-03-24",
+            "location": "City G, Latitude: 33.75, Longitude: -118.25",
+            "weather": "clear skies, extreme heat"
+        },
+        "resources_and_capabilities": {
+            "available_resources": {
+                "cooling_centers": 15,
+                "medical_equipment": 12,
+                "food_and_water": "sufficient for 5 days"
+            },
+            "infrastructure_status": {
+                "transportation": "functional",
+                "communication": "functional",
+                "power_supply": "overloaded"
+            }
+        },
+        "policy_goals": {
+            "rescue_priority": "life first",
+            "short_term_goals": ["provide medical aid", "open cooling centers"],
+            "long_term_goals": ["improve heatwave warning systems", "develop urban cooling strategies"]
+        }
+    },
+    "chemical_spill": {
+        "disaster_type": "chemical_spill",
+        "disaster_scale": {
+            "volume": "5,000 liters",
+            "affected_area": "15 square kilometers",
+            "population_affected": "20,000",
+            "economic_loss": "15 million USD"
+        },
+        "severity": {
+            "destruction_level": "high",
+            "casualties": "80",
+            "spread_speed": "2 meters per minute"
+        },
+        "time_and_location": {
+            "time": "2025-03-25 13:00",
+            "location": "Industrial Region H, Latitude: 40.71, Longitude: -74.00",
+            "weather": "light wind"
+        },
+        "resources_and_capabilities": {
+            "available_resources": {
+                "hazardous_materials_teams": 5,
+                "medical_equipment": 10,
+                "food_and_water": "sufficient for 3 days"
+            },
+            "infrastructure_status": {
+                "transportation": "partially damaged",
+                "communication": "functional",
+                "power_supply": "interrupted"
+            }
+        },
+        "policy_goals": {
+            "rescue_priority": "life first",
+            "short_term_goals": ["evacuate population", "contain chemical spill"],
+            "long_term_goals": ["clean up contaminated areas", "strengthen chemical safety regulations"]
+        }
+    },
+    "pandemic": {
+        "disaster_type": "pandemic",
+        "disaster_scale": {
+            "infection_rate": "10,000 new cases per day",
+            "affected_area": "global",
+            "population_affected": "millions",
+            "economic_loss": "trillions USD"
+        },
+        "severity": {
+            "destruction_level": "severe",
+            "casualties": "high",
+            "spread_speed": "exponential"
+        },
+        "time_and_location": {
+            "time": "2025-03-26",
+            "location": "Country I",
+            "weather": "not applicable"
+        },
+        "resources_and_capabilities": {
+            "available_resources": {
+                "medical_teams": 50,
+                "vaccines": "limited",
+                "food_and_water": "sufficient for 1 month"
+            },
+            "infrastructure_status": {
+                "transportation": "restricted",
+                "communication": "functional",
+                "power_supply": "functional"
+            }
+        },
+        "policy_goals": {
+            "rescue_priority": "life first",
+            "short_term_goals": ["provide medical care", "implement quarantine measures"],
+            "long_term_goals": ["develop vaccines", "restore economic activity"]
+        }
+    }
+}
