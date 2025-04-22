@@ -18,6 +18,7 @@ class DisasterResponseEnv(gym.Env):
         self.loop = 0  # 当前时间步
         self.action_space_rescue = spaces.Discrete(3)
         self.action_space_resource = spaces.Discrete(5)
+        self.action_space_rebuild = spaces.Discrete(3)
         # 定义状态空间：15维状态向量
         self.observation_space = spaces.Box(low=0, high=100, shape=(17,), dtype=np.float32)
         # 灾害强度的动态变化参数
@@ -495,3 +496,11 @@ class DisasterResponseEnv(gym.Env):
         print("可用避难所数量：", self.state[13])
         print("死亡人数：", self.state[14])
         print("----------------------------------")
+
+    def reset(self):
+        """
+        重置环境，返回初始状态。
+        """
+        self.state = self._initialize_state()
+        self.loop = 0
+        return self.state
