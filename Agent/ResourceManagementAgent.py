@@ -1,7 +1,7 @@
 import json
 import requests
 
-from MAS.Agent.Memory import Memory
+from Agent.Memory import Memory
 
 
 class ResourceManagementAgent:
@@ -31,6 +31,13 @@ class ResourceManagementAgent:
             "reason": "默认行动：优先满足食物和水需求，以维持基本生存。"
         }
         self.use_memory = True
+        self.actions_dict = {
+            0: "发放食物和水（每发放一个单位消耗食物1单位、水1单位，减少受灾群众的食物和水需求）",
+            1: "提供医疗援助（每提供一个单位消耗医疗资源1单位，减少医疗需求，提高生存率）",
+            2: "组织物资采集（每组织一个单位消耗劳动力1单位，增加食物和水资源，受灾害强度影响成功率）",
+            3: "建立物资储存点（每建立一个单位消耗食物10单位、水10单位、基础设施2单位，提高资源存储能力，减少浪费）",
+            4: "搭建发电设施（每搭建一个单位消耗食物20单位、水10单位，促进基础设施恢复，增强天气适应能力）"
+        }
 
     def next_action(self):
         """
@@ -53,11 +60,11 @@ class ResourceManagementAgent:
                 - **天气适应能力**：{self.env.state[11]}（影响能源生产效率）
                 
                 ### 你的任务是选择最佳的资源分配行动：
-                0. **发放食物和水**（消耗食物和水资源，减少受灾群众的食物和水需求）。  
-                1. **提供医疗援助**（消耗医疗资源，减少医疗需求，提高生存率）。  
-                2. **组织物资采集**（消耗劳动力，增加食物和水资源，受灾害强度影响采集成功率）。  
-                3. **建立物资储存点**（消耗部分食物、水和基础设施，提高资源存储能力，减少浪费）。  
-                4. **搭建发电设施**（消耗食物和水资源，促进基础设施恢复，增强天气适应能力）。  
+                0. **发放食物和水**（每发放一个单位消耗食物1单位、水1单位，减少受灾群众的食物和水需求）。
+                1. **提供医疗援助**（每提供一个单位消耗医疗资源1单位，减少医疗需求，提高生存率）。
+                2. **组织物资采集**（每组织一个单位消耗劳动力1单位，增加食物和水资源，受灾害强度影响成功率）。
+                3. **建立物资储存点**（每建立一个单位消耗食物10单位、水10单位、基础设施2单位，提高资源存储能力，减少浪费）。
+                4. **搭建发电设施**（每搭建一个单位消耗食物20单位、水10单位，促进基础设施恢复，增强天气适应能力）。  
                 
                 ### 你需要考虑：
                 - **当前资源是否足够满足需求**，避免不必要的消耗。
@@ -68,16 +75,16 @@ class ResourceManagementAgent:
                 
                 请根据当前状态选择 **最优的资源分配行动**，最大化资源利用效率，并确保灾后恢复工作顺利进行。
 
-                你的返回内容要是一个 JSON，数值填充区域不要有多余的文字：
+                你的返回内容要是一个 JSON，格式如下（不要在开头加上```json，末尾也不要加上```），数值填充区域不要有多余的文字,也不要写分析过程：
                 {{
-                    "resource_allocation": {{
-                        "action": <选择的行动编号>,
-                        "quantity": {{
-                            "food": <发放的食物数量>,
-                            "water": <发放的水数量>,
-                            "medical": <提供的医疗资源数量>
-                        }},
-                        "reason": "选择该行动的原因"
+                    'resource_allocation': {{
+                        'action': <选择的行动编号>,
+                        'reason': <选择该行动的原因>,
+                        'quantity': {{
+                            'food': <发放的食物数量>,
+                            'water': <发放的水数量>,
+                            'medical': <提供的医疗资源数量>
+                        }}
                     }}
                 }}
                 """
@@ -90,36 +97,33 @@ class ResourceManagementAgent:
             {"role": "user", "content": prompt}
         ]
         response = self.llm.generate_response(messages)
-        # 将字符串解析为字典
         response_dict = json.loads(response)
+        content = response_dict["choices"][0]["message"]["content"]
+        # 将单引号替换为双引号
+        json_string = content.replace("'", '"')
+        file_path='ResourceManagementAgent.json'
+        # 将 response_dict 保存到文件
+        with open(file_path, "w", encoding="utf-8") as file:
+            json.dump(json_string, file, ensure_ascii=False, indent=4)
 
-        # 提取 content 字段
-        content = response_dict['choices'][0]['message']['content']
+        print(f"数据已保存到 {file_path}")
 
-        # 去除多余的 Markdown 格式
-        start_marker = "```json"
-        end_marker = "```"
-        start_index = content.find(start_marker) + len(start_marker)
-        end_index = content.find(end_marker, start_index)
-        json_content = content[start_index:end_index].strip()
+        # 从文件加载数据
+        with open(file_path, "r", encoding="utf-8") as file:
+            loaded_dict = json.load(file)
 
-        # 解析 JSON 格式的内容
-        try:
-            parsed_content = json.loads(json_content)
-            resource_allocation = parsed_content['resource_allocation']
-            print("提取的 resource_allocation 字典：")
-            print(resource_allocation)
-            print("Action:", resource_allocation['action'])
-            print("Reason:", resource_allocation['reason'])
-            self.default_resource_action = resource_allocation
-        except json.JSONDecodeError as e:
-            print(f"JSON 解析错误：{e}")
-            print("原始响应：", response_dict)
-            resource_allocation = self.default_resource_action
-
-        self.next_actions = resource_allocation['action']
-        # 返回结果
-        print("最终结果：", resource_allocation)
+        print("从文件加载的数据：")
+        print(loaded_dict)
+        data_dict = json.loads(loaded_dict)
+        resource_allocation = data_dict["resource_allocation"]
+        print("解析后的字典：")
+        print(resource_allocation)
+        # 打印提取的结果
+        print("提取的 resource_allocation 字典：")
+        print('action:', resource_allocation.get('action'))
+        print('quantity:', resource_allocation.get('quantity'))
+        print('reason:', resource_allocation.get('reason'))
+        self.next_actions = resource_allocation.get('action', {})
         return resource_allocation
 
     def update_memory(self):

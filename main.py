@@ -23,6 +23,9 @@ def main():
     government_agent.RebuildingAgent = rebuilding_agent
     government_agent.RescueAgent = rescue_agent
     government_agent.ResourceManagementAgent = resource_management_agent
+    RebuildingAgent.GovernmentAgent = government_agent
+    RescueAgent.GovernmentAgent = government_agent
+    ResourceManagementAgent.GovernmentAgent = government_agent
 
     # 模拟循环
     for t in range(duration):
@@ -54,18 +57,28 @@ def main():
         rescue_action = actions.get("rescue_action", {"action": 0, "quantity": 0})
         resource_action = actions.get("resource_action", {"action": 0, "resource": [0, 0]})
 
+        RebuildingAgent.GovernmentAgent.action_get("RebuildingAgent", rebuild_action)
+        RescueAgent.GovernmentAgent.action_get("RescueAgent", rescue_action)
+        ResourceManagementAgent.GovernmentAgent.action_get("ResourceManagementAgent", resource_action)
+        rebuild_action, rescue_action, resource_action = government_agent.re_decision()
+
+        print("rebuild_action:" + str(rebuild_action))
+        print("rescue_action:" + str(rescue_action))
+        print("resource_action:" + str(resource_action))
+
         # 调用环境的 step 方法，执行一步操作
-        state, reward_rescue, reward_resource, reward_rebuild, done, info = env.step(rebuild_action,rescue_action,resource_action)
+        state, reward_rescue, reward_resource, reward_rebuild, done, info = env.step(rebuild_action, rescue_action,
+                                                                                     resource_action)
         # 打印奖励和环境状态
         print(f"救援智能体奖励: {reward_rescue}")
         print(f"资源管理智能体奖励: {reward_resource}")
         print(f"重建智能体奖励: {reward_resource}")
         print(f"环境状态: {state}")
 
-        rebuilding_agent.gain=reward_rebuild
-        rescue_agent.gain=reward_rescue
-        resource_management_agent.gain=reward_resource
-        GovernmentAgent.gain=reward_rebuild+reward_rescue+reward_resource
+        rebuilding_agent.gain = reward_rebuild
+        rescue_agent.gain = reward_rescue
+        resource_management_agent.gain = reward_resource
+        GovernmentAgent.gain = reward_rebuild + reward_rescue + reward_resource
         # 更新智能体的记忆
         print("更新智能体的记忆...")
         government_agent.update_memory()

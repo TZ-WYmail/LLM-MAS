@@ -1,0 +1,1 @@
+"{\n    \"resource_allocation\": {\n        \"action\": 1,\n        \"reason\": \"医疗需求最高，优先提供医疗援助以减少受灾群众的健康风险\",\n        \"quantity\": {\n            \"food\": 0,\n            \"water\": 0,\n            \"medical\": 243\n        }\n    }\n}"
