@@ -147,28 +147,36 @@ class Memory:
 
     def save_to_csv(self):
         """
-        将数据保存到 JSON 文件中。如果文件或目录不存在，则创建文件和目录。
+        将短期记忆和长期记忆保存到 CSV 文件中。如果文件或目录不存在，则创建文件和目录。
         :param file_name: 文件路径。
         """
-        # 确保文件所在的目录存在
-        """
-           将短期记忆和长期记忆保存到 CSV 文件中。
-           :param file_name: 文件路径。
-           """
         file_name = self.file_name
-        os.makedirs(os.path.dirname(file_name), exist_ok=True)
+        print(file_name)
+
+        # 确保文件所在的目录存在
+
+
         try:
-            with open(file_name, "w", newline="", encoding="utf-8") as f:
+            # 检查文件是否存在
+            file_exists = os.path.exists(file_name)
+
+            with open(file_name, "a", newline="", encoding="utf-8") as f:
                 writer = csv.writer(f)
-                # 写入标题行
-                writer.writerow(["memory_type", "action", "evi", "gain", "count"])
+
+                # 如果文件不存在，写入标题行
+                if not file_exists:
+                    writer.writerow(["memory_type", "action", "evi", "gain", "count"])
+
                 # 写入短期记忆
                 for mem in self.short_memory:
                     writer.writerow(["short", mem["action"], mem["evi"], mem["gain"], mem["count"]])
+
                 # 写入长期记忆
                 for mem in self.long_memory:
                     writer.writerow(["long", mem["action"], mem["evi"], mem["gain"], mem["count"]])
+
             print(f"数据已成功保存到 {file_name}")
+
         except Exception as e:
             print(f"保存文件时发生错误：{e}")
 

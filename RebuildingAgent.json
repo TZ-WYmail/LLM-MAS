@@ -1,1 +1,1 @@
-"{\n    \"resource_allocation\": {\n        \"action\": 1,\n        \"quantity\": 1910,\n        \"reason\": \"修复医疗站可以有效减少基础设施损坏，增加被安置群众数量，同时当前医疗资源充足，能够支持大规模修复。\"\n    }\n}"
+"{\n    \"resource_allocation\": {\n        \"action\": 4,\n        \"quantity\": 9888,\n        \"reason\": \"优先维修供水设施以增加可用水资源，同时修复基础设施损坏，资源充足且能显著提升灾后恢复能力。\"\n    }\n}"

@@ -204,8 +204,12 @@ class GovernmentAgent:
             }},
             "ResourceManagementAgent": {{
                 "action": <选择的行动编号>,
-                "quantity": <建造的具体数量>,
-                "reason": "选择该行动的原因"
+                "reason": <选择该行动的原因>,
+                "quantity": {{
+                    "food": <发放的食物数量>,
+                    "water": <发放的水数量>,
+                    "medical": <提供的医疗资源数量>
+                }}
             }},
             "RebuildingAgent": {{
                 "action": <选择的行动编号>,
@@ -236,8 +240,6 @@ class GovernmentAgent:
         # 从文件加载数据
         with open(file_path, "r", encoding="utf-8") as file:
             loaded_dict = json.load(file)
-            print(loaded_dict)
-
         try:
             data_dict = json.loads(loaded_dict)
         except json.JSONDecodeError as e:
@@ -251,7 +253,7 @@ class GovernmentAgent:
         # 为每个智能体分配决策
         rebuild_action = decisions.get("RebuildingAgent", {"action": 0, "quantity": 1})
         rescue_action = decisions.get("RescueAgent", {"action": 0, "quantity": 1})
-        resource_action = decisions.get("ResourceManagementAgent", {"action": 0, "resource": [10, 10]})
+        resource_action = decisions.get("ResourceManagementAgent", {"action": 0, "quantity": {'food': 10, 'water': 10, 'medical': 0}})
 
 
         return rebuild_action,rescue_action,resource_action
