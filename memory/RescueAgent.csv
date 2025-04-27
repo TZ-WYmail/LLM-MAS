@@ -1,2 +1,6 @@
 memory_type,action,evi,gain,count
-short,0,"(83, 292, 918, 918, 2361, 224, -915, -300, 1483, 693, 96, 166, 0, 24, 1712)",10,1
+short,0,"(np.int32(51), np.int32(340), np.int32(544), np.int32(413), np.int32(461), np.int32(220), np.int32(425), np.int32(81), np.int32(255), np.int32(176), np.int32(80), np.int32(50), np.int32(7), np.int32(20), np.int32(0), np.int32(0), np.int32(0))",10.0,2
+short,0,"(np.int32(55), np.int32(340), np.int32(1192), np.int32(1161), np.int32(759), np.int32(-83), np.int32(435), np.int32(45), np.int32(-24), np.int32(61), np.int32(80), np.int32(60), np.int32(1), np.int32(20), np.int32(0), np.int32(0), np.int32(0))",10,1
+short,0,"(np.int32(57), np.int32(340), np.int32(1770), np.int32(1739), np.int32(1337), np.int32(-78), np.int32(440), np.int32(140), np.int32(157), np.int32(183), np.int32(80), np.int32(63), np.int32(0), np.int32(20), np.int32(3), np.int32(0), np.int32(0))",10,1
+short,1,"(np.int32(59), np.int32(340), np.int32(2163), np.int32(2102), np.int32(1910), np.int32(-73), np.int32(445), np.int32(342), np.int32(189), np.int32(127), np.int32(80), np.int32(68), np.int32(3), np.int32(20), np.int32(3), np.int32(0), np.int32(0))",10,1
+short,0,"(np.int32(61), np.int32(340), np.int32(2730), np.int32(2669), np.int32(2177), np.int32(-67), np.int32(449), np.int32(46), np.int32(407), np.int32(274), np.int32(80), np.int32(72), np.int32(1), np.int32(20), np.int32(17), np.int32(0), np.int32(0))",10,1

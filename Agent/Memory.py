@@ -18,7 +18,17 @@ class Memory:
         self.long_memory = []  # 长期记忆
         self.decay_rate = decay_rate
         self.long_memory_threshold = long_memory_threshold
-        self.file_name=None
+        self.file_name = None
+
+    def clean_memory(self):
+        # 指定 CSV 文件路径
+        file_path = self.file_name
+
+        # 打开文件并写入空内容
+        with open(file_path, 'w', encoding='utf-8') as file:
+            file.write('')  # 写入空内容
+
+        print(f"文件 {file_path} 已被清空。")
 
     def add_to_short_memory(self, timestamp, action, evi, gain):
         """
@@ -41,11 +51,11 @@ class Memory:
         应用遗忘曲线，对短期记忆中的内容进行动态管理。
         好的记忆衰减慢，坏的记忆衰减快。
         """
-        current_time = time.time()
-        self.short_memory = [
-            mem for mem in self.short_memory
-            if (current_time - mem["timestamp"]) < (1 / self.decay_rate)
-        ]
+        # current_time = time.time()
+        # self.short_memory = [
+        #     mem for mem in self.short_memory
+        #     if (current_time - mem["timestamp"]) < (1 / self.decay_rate)
+        # ]
 
     def promote_to_long_memory(self):
         """
@@ -56,7 +66,6 @@ class Memory:
             if mem["count"] >= self.long_memory_threshold:
                 self.long_memory.append(mem)
                 self.short_memory.remove(mem)
-
 
     def update_memory(self, action, evi, gain):
         """
@@ -177,4 +186,3 @@ class Memory:
 
     def __str__(self):
         return f"短期记忆：{self.short_memory}\n长期记忆：{self.long_memory}"
-
