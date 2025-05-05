@@ -1,1 +1,1 @@
-"{\n    \"resource_allocation\": {\n        \"action\": 1,\n        \"quantity\": 50,\n        \"reason\": \"当前救援队伍数量为0，无法执行搜救和撤离行动。优先生产救援队伍以确保后续行动的可行性。食物和水资源充足，支持生产50个单位的救援队伍。\"\n    }\n}"
+"{\n    \"resource_allocation\": {\n        \"action\": 0,\n        \"reason\": \"当前首要任务是搜救受灾群众，安置到安全区域以减少人员伤亡风险，同时避难所容量充足支持此行动。\",\n        \"quantity\": {\n            \"members\": 48,\n            \"equipment\": 0,\n            \"medical\": 0\n        }\n    }\n}"

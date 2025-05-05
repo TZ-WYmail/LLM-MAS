@@ -1,1 +1,1 @@
-"{\n    \"resource_allocation\": {\n        \"action\": 0,\n        \"reason\": \"当前食物和水资源充足，优先满足受灾群众的基本需求以稳定局势\",\n        \"quantity\": {\n            \"food\": 185,\n            \"water\": 54,\n            \"medical\": 0\n        }\n    }\n}"
+"{\n    \"resource_allocation\": {\n        \"action\": 0,\n        \"reason\": \"食物和水需求最为紧迫，优先满足基本生存需求以避免更大的损失。\",\n        \"quantity\": {\n            \"food\": 43,\n            \"water\": 9,\n            \"medical\": 0,\n            \"settle\": 0,\n            \"workers\": 0\n        }\n    }\n}"

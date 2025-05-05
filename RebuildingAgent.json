@@ -1,1 +1,1 @@
-"{\n    \"resource_allocation\": {\n        \"action\": 4,\n        \"quantity\": 9888,\n        \"reason\": \"优先维修供水设施以增加可用水资源，同时修复基础设施损坏，资源充足且能显著提升灾后恢复能力。\"\n    }\n}"
+"{\n    \"resource_allocation\": {\n        \"action\": 1,\n        \"quantity\": {\n            \"members\": 25,\n            \"equipment\": 25\n        },\n        \"reason\": \"优先修复基础设施以恢复关键功能，当前资源充足支持此行动且天气条件适中\"\n    }\n}"
