@@ -146,44 +146,47 @@ class DisasterResponseEnv(gym.Env):
         action = de_action['action']
         resource = de_action['quantity']
 
-        if action == 0:  # 扩建避难所容量（提供更多安置位）
+        if action == 0:  # 扩建避难所容量
             builders = resource['members']
-            tools = resource['equipment']
-            if self.state[8] >= builders and self.state[7] >= tools:
+            equipment = resource['equipment']
+            if self.state[8] >= builders and self.state[7] >= equipment:
                 built = sum(1 for _ in range(builders) if np.random.rand() < self.state[13] / 100)
-                self.state[9] += built * 5  # 每单位工人可能扩建5人容量
-                self.state[7] -= tools
-                self.state[8] -= builders
+                self.state[9] += built * 5  # 每单位工人扩建5人容量
+                self.state[7] -= equipment
                 reward += built * 2  # 每成功一次给2分
-                self.state[8] += builders  # 返还成员
             else:
-                reward -= 5
+                reward -= 10
 
         elif action == 1:  # 修复基础设施（用救援人员 + 装备）
             members = resource['members']
-            tools = resource['equipment']
-            if self.state[7] >= tools and self.state[8] >= members:
+            equipment = resource['equipment']
+            if self.state[8]+self.state[2] >= members and self.state[7] >= equipment:
                 success = sum(1 for _ in range(members) if np.random.rand() > (1 - self.state[13]) / 100)
                 self.state[3] = max(0, self.state[3] - success)  # 减少损坏的基础设施
-                self.state[7] -= tools
-                self.state[8] -= members
+                self.state[7] -= equipment
                 reward += success * 3
-                self.state[8] += members  # 成功后成员返还
             else:
-                reward -= 5
+                reward -= 10
+
 
         elif action == 2:  # 污染治理（减轻污染值）
-            workers = resource['members']
-            tools = resource['equipment']
-            if self.state[8] >= workers and self.state[7] >= tools:
-                cleaned = sum(1 for _ in range(workers) if np.random.rand() < self.state[13] / 100)
-                self.state[14] = max(0, self.state[14] - cleaned * 2)  # 每单位治理可减少污染2点
-                self.state[7] -= tools
-                self.state[8] -= workers
-                reward += cleaned * 2
-                self.state[8] += workers  # 成员返还
+            workers = resource['members']  # 所需人力（救援人员 + 已安置群众）
+            equipment = resource['equipment']  # 所需救援装备
+            total_manpower = self.state[8] + self.state[2]  # 可用救援人员 + 已安置群众
+            if total_manpower >= workers and self.state[7] >= equipment:
+                success_rate = (self.state[13] / 100) * 0.6 + (1 - self.state[0] / 1000) * 0.4
+                cleaned = sum(1 for _ in range(workers) if np.random.rand() < success_rate)
+                self.state[7] -= equipment  # 消耗装备
+                if cleaned / workers < 0.2:  # 成功率低于20%算失败
+                    pollution_risk = (1 - self.state[13] / 100) * 0.5 + (self.state[0] / 1000) * 0.5
+                    pollution_increase = int(np.random.rand() * 5 * pollution_risk)
+                    self.state[14] += min(100, self.state[14] + pollution_increase)
+                    reward -= 5
+                else:
+                    self.state[14] = max(0, self.state[14] - cleaned * 2)  # 成功治理，污染下降
+                    reward += cleaned * 2
             else:
-                reward -= 5
+                reward -= 10
 
         return reward
 
@@ -200,50 +203,50 @@ class DisasterResponseEnv(gym.Env):
         if action == 0:  # 派出救援队搜救未被救出人员
             members = resource['members']
             equipment = resource['equipment']
-
             if self.state[8] >= members and self.state[7] >= equipment:
                 success_rescue = 0
                 death_found = 0
-
+                self.state[7] -= equipment
                 for _ in range(members):
-                    chance = np.random.rand()
-                    # 成功率受天气影响，天气越差越难救
-                    if chance < self.state[13] / 100:
-                        if np.random.rand() < 0.85:  # 成功救出活人
+                    base_prob = self.state[13] / 100  # 天气影响
+                    difficulty_penalty = self.state[0] / 200  # 灾害强度影响
+                    rescue_chance = max(0, base_prob - difficulty_penalty)
+                    if np.random.rand() < rescue_chance:
+                        if np.random.rand() < 0.85:
                             success_rescue += 1
-                        else:  # 找到的是死者
+                            reward += 5
+                        else:
                             death_found += 1
-
-                # 更新状态
-                self.state[1] = max(0, self.state[1] - (success_rescue + death_found))  # 从未被救出中剔除
-                self.state[2] += success_rescue  # 成功救出的加到已安置
-                self.state[15] += death_found  # 死亡人数增加
-                self.state[8] -= members  # 消耗救援人员
-                self.state[7] -= equipment  # 消耗装备
-
-                # 成功救出活人奖励，每人 +10，发现死者每人 -5 惩罚
-                reward += success_rescue * 10 - death_found * 5
+                            reward -= 3
+                    else:
+                        reward -= 5
+                self.state[1] += success_rescue
+                self.state[15] += death_found
             else:
                 reward -= 10  # 资源不足惩罚
 
-
         elif action == 1:  # 提供紧急医疗援助
-            medical_team = resource['members']
-            medical_supplies = resource['medical']
-            if self.state[8] >= medical_team and self.state[6] >= medical_supplies:
-                patients_treated = 0
-                for _ in range(medical_team):
-                    chance = np.random.rand()
-                    if chance < self.state[13] / 100:  # 天气好，成功率高
-                        patients_treated += 1
-
-                actual_treated = min(patients_treated, self.state[12])  # 不超过实际需求
+            members = resource['members']
+            medical = resource['medical']
+            equipment = resource['equipment']
+            if self.state[8] >= members and self.state[6] >= medical and self.state[7] >= equipment:
+                treated = 0
+                for _ in range(members):
+                    # 成功率受天气、污染、灾难影响影响
+                    base_chance = self.state[13] / 100
+                    pollution_penalty = self.state[14] / 200
+                    disaster_penalty = self.state[0] / 200
+                    success_chance = max(0, base_chance - pollution_penalty - disaster_penalty)
+                    if np.random.rand() < success_chance:
+                        treated += 1
+                actual_treated = min(treated, self.state[12])  # 不超过需求
                 self.state[12] = max(0, self.state[12] - actual_treated)
-                self.state[6] -= medical_supplies
-                self.state[8] -= medical_team
-                reward += actual_treated * 6  # 每治疗一人给6分
+                self.state[6] -= medical
+                self.state[7] -= equipment
+                self.state[14] = max(0, self.state[14] - actual_treated * 0.5)  # 每成功1人减少0.5污染
+                reward += actual_treated * 3
             else:
-                reward -= 8  # 资源不足
+                reward -= 10  # 资源不足
 
         return reward
 
@@ -269,25 +272,12 @@ class DisasterResponseEnv(gym.Env):
                     reward += 10
                     print(f"食物需求：{self.state[10]}, 水需求：{self.state[11]}")
                 else:
-                    reward -= 5  # 没有需求仍发放
+                    reward -= 10  # 没有需求仍发放
             else:
                 reward -= 10  # 资源不足
 
-        elif action == 1:  # 提供医疗资源
-            medical = resource['medical']
-            if self.state[6] >= medical:
-                if self.state[12] > 0:
-                    self.state[6] -= medical
-                    self.state[12] = max(0, self.state[12] - medical * 1.5)
-                    reward += 12
-                    print(f"医疗需求：{self.state[12]}")
-                else:
-                    reward -= 5 # 没有需求仍发放
-            else:
-                reward -= 10 # 资源不足
 
-
-        elif action == 2:  # 安置受灾群众
+        elif action == 1:  # 安置受灾群众
             settle_count = resource['settle']# 决定安置多少人
             available_people = self.state[1]  # 仍未安置的人数
             if self.state[9] >= settle_count and available_people > 0:
@@ -298,15 +288,26 @@ class DisasterResponseEnv(gym.Env):
             else:
                 reward -= 5
 
-        elif action == 3:  # 基础资源采集（低效率获取食物/水）
+
+        elif action == 2:  # 基础资源采集（低效率获取食物/水）
             workers = resource['workers']
-            if self.state[2] >= workers:  # 让已安置群众采集
-                gathered = sum(1 for _ in range(workers) if np.random.rand() > self.state[0] / 100)
-                self.state[4] += gathered * 2  # 食物
-                self.state[5] += gathered * 2  # 水
+            if self.state[2] >= workers:  # 由已被安置群众进行采集
+                gathered = 0
+                for _ in range(workers):
+                    # 成功概率受天气、污染、灾难强度共同影响
+                    base_chance = 0.6
+                    weather_bonus = self.state[13] / 200  # 天气越好，概率越高
+                    pollution_penalty = self.state[14] / 300  # 污染越高，概率越低
+                    disaster_penalty = self.state[0] / 300  # 灾难越强，越难采集
+                    success_chance = min(1.0,
+                                         max(0.1, base_chance + weather_bonus - pollution_penalty - disaster_penalty))
+                    if np.random.rand() < success_chance:
+                        gathered += 1
+                self.state[4] += gathered * 2  # 每单位食物
+                self.state[5] += gathered * 2  # 每单位水
                 reward += gathered
             else:
-                reward -= 3
+                reward -= 10  # 人力不足
 
         return reward
 
