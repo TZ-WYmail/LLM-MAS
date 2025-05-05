@@ -69,18 +69,14 @@ class DisasterResponseEnv(gym.Env):
         """
         # 初始化状态向量，确保每个状态的初始值合理
         state = np.random.randint(200, 600, size=(16,))
-        state[1] = self.total_number
         state[2] = 0
         if self.total_infrastructure < state[3]:
             state[3] = self.total_infrastructure
         state[10] = state[1] * 1.5
         state[11] = state[1] * 1.5
-
         state[13] = (state[13] - 200) / (600 - 200) * 100
         state[14] = (state[14] - 200) / (600 - 200) * 100
-
         state[15] = 0
-
         #打印基本信息
         print("初始化状态：")
         print("灾害强度：", state[0])
@@ -324,7 +320,7 @@ class DisasterResponseEnv(gym.Env):
         污染对食物和水资源造成损耗。
         """
         pollution = self.state[14]  # 0-100，越高越污染
-        decay_rate = pollution / 100 * 0.1  # 最大每轮损失10%
+        decay_rate = pollution / 100 # 最大每轮损失10%
 
         food_loss = int(self.state[4] * decay_rate)
         water_loss = int(self.state[5] * decay_rate)
@@ -357,9 +353,16 @@ class DisasterResponseEnv(gym.Env):
         """
         动态更新状态，模拟环境的自然变化。
         """
+        #基础设施提供的
+        self.state[4] += max(0,500 - self.state[3])
+        self.state[5] += max(0,500 - self.state[3])
+        #外来补给
+        self.state[6] += 100
+        self.state[7] += 100
+        self.state[8] += 100
 
         # 减员规则：
-        population_affected = self.state[6]  # 受灾群众总数量
+        population_affected = self.state[1] + self.state[2]  # 受灾群众总数量
         medical_needs = self.state[12]  # 医疗需求
         food_needs = self.state[10]  # 食物需求
         water_needs = self.state[11]  # 水需求
@@ -387,15 +390,13 @@ class DisasterResponseEnv(gym.Env):
         # 更新灾害强度
         self.loop += 1
         self.state[0] = self._calculate_disaster_intensity(self.loop)
-
-
         # 灾害强度影响基础设施损坏
         self.state[3] += int(self.state[0] * 0.1) * np.random.rand()  # 灾害强度增加基础设施损坏数量
 
         # 更新需求
-        self.state[12] += self.state[2] * 0.1 + self.state[1] * np.random.rand() * 0.8
-        self.state[10] += self.state[2] * 0.1 + self.state[1] * np.random.rand() * 0.8
-        self.state[11] += self.state[2] * 0.1 + self.state[1] * np.random.rand() * 0.8
+        self.state[12] += self.state[2] * 0.1
+        self.state[10] += self.state[2] * 0.1
+        self.state[11] += self.state[2] * 0.1
 
         # 更新天气
         self.state[13] += int(np.random.rand() * 10)
