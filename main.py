@@ -2,7 +2,7 @@ from Agent.GovernmentAgent import GovernmentAgent
 from Agent.RebuildingAgent import RebuildingAgent
 from Agent.RescueAgent import RescueAgent
 from Agent.ResourceManagementAgent import ResourceManagementAgent
-from DisasterEnv import DisasterResponseEnv
+from newEnv import DisasterResponseEnv
 from LLM import LLMClient
 
 
