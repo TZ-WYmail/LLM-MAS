@@ -1,1 +1,0 @@
-"{\n    \"resource_allocation\": {\n        \"action\": 0,\n        \"reason\": \"食物和水需求最为紧迫，优先满足基本生存需求以避免更大的损失。\",\n        \"quantity\": {\n            \"food\": 43,\n            \"water\": 9,\n            \"medical\": 0,\n            \"settle\": 0,\n            \"workers\": 0\n        }\n    }\n}"
