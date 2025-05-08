@@ -19,12 +19,13 @@ class GovernmentAgent:
         self.RebuildingAgent = None
         self.ResourceManagementAgent = None
         self.RescueAgent = None
+        self.ResourceSchedulingAgent = None
         self.Agent_name = 'GovernmentAgent'
         self.memory = Memory(decay_rate=0.1, long_memory_threshold=3)
         self.gain = 0
         self.memory.file_name = 'memory/GovernmentAgent.csv'
         self.memory.clean_memory()
-        self.agent_action = {'RescueAgent': '','ResourceManagementAgent': '','RebuildingAgent': ''}
+        self.agent_action = {'RescueAgent': '','ResourceManagementAgent': '','RebuildingAgent': '','ResourceSchedulingAgent':''}
         self.use_memory = True
 
     def next_action(self):
@@ -59,6 +60,7 @@ class GovernmentAgent:
                 - **救援行动**：根据受灾区域待救援人数和可用救援队伍数量，决定是否调用救援代理（RescueAgent）。
                 - **资源分配**：根据受灾群众的需求（食物、水、医疗）和现有资源，决定是否调用资源管理代理（ResourceManagementAgent）。
                 - **重建计划**：根据基础设施损坏数量和可用避难所数量，决定是否调用重建代理（RebuildingAgent）。
+                - **外部补给调度**：根据可用食物、水、医疗资源、救援人员、救援装备数量，决定是否调用调度代理（ResourceSchedulingAgent）。
 
                 请根据当前状态制定一个全面且可行的灾害响应政策，并以 JSON 格式返回，格式如下，数值填充区域不要有多余的文字：
                 {{
@@ -150,6 +152,8 @@ class GovernmentAgent:
             self.agent_action['ResourceManagementAgent'] = agent_action
         elif agent_name == 'RebuildingAgent':
             self.agent_action['RebuildingAgent'] = agent_action
+        elif agent_name == 'ResourceSchedulingAgent':
+            self.agent_action['ResourceSchedulingAgent'] = agent_action
         else:
             print('智能体名称错误')
 
@@ -164,7 +168,7 @@ class GovernmentAgent:
         rescue_action = self.agent_action.get('RescueAgent', {})
         resource_action = self.agent_action.get('ResourceManagementAgent', {})
         rebuild_action = self.agent_action.get('RebuildingAgent', {})
-
+        schedule_action = self.agent_action.get('ResourceSchedulingAgent', {})
         # 构造输入提示
         prompt = f"""
         你是一名专业的决策制定者，当前面临以下灾害场景：
@@ -188,11 +192,13 @@ class GovernmentAgent:
         - RescueAgent: {rescue_action}
         - ResourceManagementAgent: {resource_action}
         - RebuildingAgent: {rebuild_action}
+        - ResourceSchedulingAgent: {schedule_action}
         
         这是他们决策的影响：
         - 救援行动：{self.RescueAgent.actions_dict[rescue_action['action']]}
         - 资源分配：{self.ResourceManagementAgent.actions_dict[resource_action['action']]}
         - 重建计划：{self.RebuildingAgent.actions_dict[rebuild_action['action']]}
+        - 外部补给调度计划：{self.ResourceSchedulingAgent.actions_dict[rebuild_action['action']]}
 
         你的任务是综合考虑当前灾害情况和每个智能体的决策建议，为每个智能体生成一个独立且合理的决策,请特别注意现在的资源是有限的，不要直接使用每个智能体的决策建议，
         每一个智能体都希望先有利于自己的情况，他们使用的资源之和会超过你能调度的资源总量，你要合理的计算和分配有限的资源，不能出现资源全部用完的情况。
@@ -200,8 +206,12 @@ class GovernmentAgent:
         {{
             "RescueAgent": {{
                "action": <选择的行动编号>,
-               "quantity": <建造的具体数量>,
-               "reason": "选择该行动的原因"
+               "quantity": {{
+                    "members": <安排的救援人员数量>
+                    "equipment": <安排的救援装备数量>
+                    "medical": <提供的医疗资源数量>
+               }}  
+               "reason": <选择该行动的原因>
             }},
             "ResourceManagementAgent": {{
                 "action": <选择的行动编号>,
@@ -209,14 +219,30 @@ class GovernmentAgent:
                 "quantity": {{
                     "food": <发放的食物数量>,
                     "water": <发放的水数量>,
-                    "medical": <提供的医疗资源数量>
+                    "medical": <提供的医疗资源数量>,
+                    "settle": <安置的群众数量>,
+                    "workers": <安排采集的群众数量>
                 }}
             }},
             "RebuildingAgent": {{
                 "action": <选择的行动编号>,
-                "quantity": <建造的具体数量>,
-                "reason": "选择该行动的原因"
-            }}
+                'quantity': {{
+                    'members': <使用的成员数量>,
+                    'equipment': <使用的装备数量>
+                }},
+                "reason": <选择该行动的原因>
+            }}，
+            "ResourceSchedulingAgent": {{
+                "action": <选择的行动编号>,
+                "reason": <选择该行动的原因>,
+                "quantity": {{
+                    'food': <要调来的食物数量>,
+                    'water': <要调来的水数量>,
+                    'medicine': <要调来的成员数量>,
+                    'members': <要调来的成员数量>,
+                    'equipment': <要调来的装备数量>
+                }}
+            }},
         }}
         """
 
@@ -252,9 +278,35 @@ class GovernmentAgent:
         decisions = data_dict
 
         # 为每个智能体分配决策
-        rebuild_action = decisions.get("RebuildingAgent", {"action": 0, "quantity": 1})
-        rescue_action = decisions.get("RescueAgent", {"action": 0, "quantity": 1})
-        resource_action = decisions.get("ResourceManagementAgent", {"action": 0, "quantity": {'food': 10, 'water': 10, 'medical': 0}})
-
+        rebuild_action = decisions.get("RebuildingAgent", {
+            'action': 0,  # 默认行动：建造避难所
+            'quantity': {  # 默认资源配置
+                'members': 1,  # 默认需要1个建设成员
+                'equipment': 1  # 默认需要1个建设工具
+            }})
+        rescue_action = decisions.get("RescueAgent", {
+            "action": 0,  # 默认行动：派出救援队搜救未被救出人员
+            "quantity": {
+                "members": 1,  # 默认出动1名救援队员
+                "equipment": 1,  # 默认配备1单位救援装备
+                "medical": 0  # 医疗资源仅在医疗行动中使用
+            }})
+        resource_action = decisions.get("ResourceManagementAgent", {
+            "action": 0,  # 默认行动：发放食物和水
+            "quantity": {  # 默认资源分配数量
+                "food": 10,  # 发放10单位食物
+                "water": 10,  # 发放10单位水
+                "settle": 0,
+                "workers": 0
+            }})
+        schedule_action = decisions.get("ResourceSchedulingAgent",{
+            'action': 0,  # 默认行动：从外面调动食物和水
+            'quantity': {  # 默认资源配置
+                'food': 10,  # 默认提供10单位食物
+                'water': 10,  # 默认提供10单位水
+                'member': 0,
+                'medicine': 0,
+                'equipment': 0
+            }})
 
         return rebuild_action,rescue_action,resource_action
