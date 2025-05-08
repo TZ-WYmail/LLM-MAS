@@ -100,17 +100,19 @@ class DisasterResponseEnv(gym.Env):
         print("死亡人数：", state[15])
         return state
 
-    def step(self, action_rebuild, action_rescue, action_resource):
+    def step(self, action_rebuild, action_rescue, action_resource, action_schedule):
         """
         执行一步操作，更新环境状态。
         :param action_rebuild: 灾后重建智能体的行动。
         :param action_rescue: 救援智能体的行动。
         :param action_resource: 资源分配智能体的行动。
-        :return: 更新后的状态、救援智能体的奖励、资源分配智能体的奖励、是否结束、附加信息。
+        :param action_schedule: 调度智能体的行动。
+        :return: 更新后的状态、救援智能体的奖励、资源分配智能体的奖励、调度智能体的奖励是否结束、附加信息。
         """
         reward_rescue = 0
         reward_resource = 0
         reward_rebuild = 0
+        reward_schedule = 0
         done = False
 
         # 更新灾害强度
@@ -121,7 +123,7 @@ class DisasterResponseEnv(gym.Env):
         reward_rescue += self._execute_rescue_action(action_rescue)
         # 执行资源分配智能体的行动
         reward_resource += self._execute_resource_action(action_resource)
-
+        reward_schedule += self._execute_schedule_action(action_schedule)
         # 动态更新状态
         self._update_state_dynamics()
 
@@ -130,7 +132,7 @@ class DisasterResponseEnv(gym.Env):
         # 检查是否结束
         done = self.loop >= self.duration
 
-        return self.state, reward_rescue, reward_resource, reward_rebuild, done, {}
+        return self.state, reward_rescue, reward_resource, reward_rebuild, reward_schedule, done, {}
 
     def _execute_rebuild_action(self, de_action):
         """
@@ -307,6 +309,56 @@ class DisasterResponseEnv(gym.Env):
 
         return reward
 
+    def _execute_schedule_action(self, de_action):
+        """
+        执行调度智能体的行动。
+        :param de_action: 调度智能体的行动（包含action和quantity字典）。
+        :return: 奖励值。
+        """
+        reward = 0
+        action = de_action['action']
+        quantity = de_action['quantity']
+
+        if action == 0:
+            # 调度食物和水
+            food = quantity.get('food', 0)
+            water = quantity.get('water', 0)
+
+            # 超量调度惩罚（只要某一项本次调度 > 200 就惩罚）
+            if food > 200:
+                reward -= 5
+            if water > 200:
+                reward -= 5
+
+            self.state[4] += food  # 食物
+            self.state[5] += water  # 水
+
+            reward += 5
+
+        elif action == 1:
+            # 调度救援成员、医疗资源、装备
+            member = quantity.get('member', 0)
+            medicine = quantity.get('medicine', 0)
+            equipment = quantity.get('equipment', 0)
+
+            if member > 200:
+                reward -= 5
+            if medicine > 200:
+                reward -= 5
+            if equipment > 200:
+                reward -= 5
+
+            self.state[8] += member  # 救援人员
+            self.state[6] += medicine  # 医疗资源
+            self.state[7] += equipment  # 救援装备
+
+            reward += 10
+
+        else:
+            reward -= 10 # 非法行为惩罚
+
+        return reward
+
     def _calculate_disaster_intensity(self, t):
         """
         计算灾害强度的动态变化。
@@ -324,9 +376,16 @@ class DisasterResponseEnv(gym.Env):
 
         food_loss = int(self.state[4] * decay_rate)
         water_loss = int(self.state[5] * decay_rate)
+        if (food_loss > 0):
+            self.state[4] = max(0, self.state[4] - food_loss)
+        else:
+            food_loss = 0
+        if (water_loss > 0):
+            self.state[5] = max(0, self.state[5] - water_loss)
+        else:
+            water_loss = 0
 
-        self.state[4] = max(0, self.state[4] - food_loss)
-        self.state[5] = max(0, self.state[5] - water_loss)
+
 
         print(f"污染影响资源：食物减少 {food_loss}，水减少 {water_loss}")
 
@@ -347,6 +406,7 @@ class DisasterResponseEnv(gym.Env):
         pollution = death_factor * temperature_factor * 100
 
         self.state[14] = min(100, int(pollution))  # 限制在 0~100
+        self.state[14] = max(0,self.state[14])
         print(f"更新污染值为：{self.state[14]}")
 
     def _update_state_dynamics(self):
@@ -356,10 +416,10 @@ class DisasterResponseEnv(gym.Env):
         #基础设施提供的
         self.state[4] += max(0,500 - self.state[3])
         self.state[5] += max(0,500 - self.state[3])
-        #外来补给
-        self.state[6] += 100
-        self.state[7] += 100
-        self.state[8] += 100
+        # #外来补给
+        # self.state[6] += 100
+        # self.state[7] += 100
+        # self.state[8] += 100
 
         # 减员规则：
         population_affected = self.state[1] + self.state[2]  # 受灾群众总数量
@@ -386,7 +446,7 @@ class DisasterResponseEnv(gym.Env):
 
         self.state[15] += casualties
         self.state[1] -= casualties  # 更新受灾群众总数量
-
+        if self.state[1] < 0: self.state[1] = 0
         # 更新灾害强度
         self.loop += 1
         self.state[0] = self._calculate_disaster_intensity(self.loop)

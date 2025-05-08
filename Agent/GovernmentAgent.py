@@ -49,8 +49,8 @@ class GovernmentAgent:
                 - 可用救援装备：{self.env.state[7]}（可用于执行救援和重建任务的装备数量）
                 - 可用救援人员数量：{self.env.state[8]}（可用于执行救援和重建任务的人员数量）
                 - 可用避难所数量：{self.env.state[9]}（可用于安置未安置受灾群众的避难所可容纳数量）
-                - 食物需求：{self.env.state[10]}（需要食物援助的人数）
-                - 水需求：{self.env.state[11]}（需要水援助的人数）
+                - 食物需求：{self.env.state[10]}（需要食物援助的人数）不是缺口，是总共需要的
+                - 水需求：{self.env.state[11]}（需要水援助的人数）不是缺口，是总共需要的
                 - 医疗需求：{self.env.state[12]}（需要医疗援助的人数）
                 - 天气条件：{self.env.state[13]}（影响救援和重建效率，数值越低越恶劣）
                 - 污染：{self.env.state[14]}（由死亡人数影响，污染过高会影响重建效率与可用资源数量）
@@ -198,7 +198,7 @@ class GovernmentAgent:
         - 救援行动：{self.RescueAgent.actions_dict[rescue_action['action']]}
         - 资源分配：{self.ResourceManagementAgent.actions_dict[resource_action['action']]}
         - 重建计划：{self.RebuildingAgent.actions_dict[rebuild_action['action']]}
-        - 外部补给调度计划：{self.ResourceSchedulingAgent.actions_dict[rebuild_action['action']]}
+        - 外部补给调度计划：{self.ResourceSchedulingAgent.actions_dict[schedule_action['action']]}
 
         你的任务是综合考虑当前灾害情况和每个智能体的决策建议，为每个智能体生成一个独立且合理的决策,请特别注意现在的资源是有限的，不要直接使用每个智能体的决策建议，
         每一个智能体都希望先有利于自己的情况，他们使用的资源之和会超过你能调度的资源总量，你要合理的计算和分配有限的资源，不能出现资源全部用完的情况。
@@ -309,4 +309,4 @@ class GovernmentAgent:
                 'equipment': 0
             }})
 
-        return rebuild_action,rescue_action,resource_action
+        return rebuild_action,rescue_action,resource_action,schedule_action
