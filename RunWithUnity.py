@@ -1,3 +1,6 @@
+from flask import Flask, request, jsonify
+import threading
+import time
 import threading
 
 import requests
@@ -12,11 +15,15 @@ from LLM import LLMClient
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 import numpy as np
+app = Flask(__name__)
 
-state = np.zeros(16, dtype=float)
 
 def main():
     # 初始化环境
+    global simulation_states, simulation_running,state_dict
+    simulation_running = True
+    simulation_states = np.zeros(16, dtype=float)
+    state_dict = build_state_dict(simulation_states)
     duration = 20  # 模拟总时间步长
     env = DisasterResponseEnv(duration)
 
@@ -118,13 +125,43 @@ def main():
         resource_scheduling_agent.memory.save_to_csv()
         print(rescue_agent.memory.short_memory.__len__())
         print("记忆存储成功！")
-        state = env.return_state()
-        state_dict = build_state_dict(state)
-        send_state_to_unity(state_dict)
+        simulation_states = env.return_state()
+        print(simulation_states)
+        state_dict = build_state_dict(simulation_states)
+        print(state_dict)
         if done:
             print("模拟结束！")
-
+            simulation_running = False
             break
+
+# 模拟函数（你已有的环境模拟函数应写在这里）
+def run_simulation():
+    global simulation_states, simulation_running
+    simulation_running = True
+    simulation_states = []
+
+    for _ in range(5):  # 假设模拟 5 轮（你可以自定义）
+        time.sleep(1)  # 模拟每轮耗时（你已有逻辑代替）
+        fake_state = [i for i in range(16)]  # 示例，替换为你的 state
+        simulation_states.append(fake_state)
+
+    simulation_running = False
+
+
+@app.route('/start_disaster', methods=['POST'])
+def start_disaster():
+    print("收到 Unity 启动请求")
+    t = threading.Thread(target=main)
+    t.start()
+    return jsonify({"status": "started"})
+
+
+@app.route('/state', methods=['GET'])
+def get_state():
+    return jsonify({
+        "states": state_dict,
+        "running": simulation_running
+    })
 
 def send_state_to_unity(state_dict):
     url = "http://localhost:8888/state"
@@ -136,23 +173,23 @@ def send_state_to_unity(state_dict):
 
 def build_state_dict(state):
     return {
-        "disaster_intensity": state[0],
-        "unrescued_people": state[1],
-        "resettled_residents_number": state[2],
-        "infrastructure_damage": state[3],
-        "available_food": state[4],
-        "available_water": state[5],
-        "available_medical": state[6],
-        "available_rescue_resource": state[7],
-        "available_rescue_member": state[8],
-        "available_center": state[9],
-        "food_needs": state[10],
-        "water_needs": state[11],
-        "medical_needs": state[12],
-        "weather_conditions": state[13],
-        "pollution": state[14],
-        "number_of_deaths": state[15]
+        "disaster_intensity": int(state[0]),
+        "unrescued_people": int(state[1]),
+        "resettled_residents_number": int(state[2]),
+        "infrastructure_damage": int(state[3]),
+        "available_food": int(state[4]),
+        "available_water": int(state[5]),
+        "available_medical": int(state[6]),
+        "available_rescue_resource": int(state[7]),
+        "available_rescue_member": int(state[8]),
+        "available_center": int(state[9]),
+        "food_needs": int(state[10]),
+        "water_needs": int(state[11]),
+        "medical_needs": int(state[12]),
+        "weather_conditions": int(state[13]),
+        "pollution": int(state[14]),
+        "number_of_deaths": int(state[15])
     }
 
-if __name__ == "__main__":
-    main()
+if __name__ == '__main__':
+    app.run(host="localhost", port=8080)

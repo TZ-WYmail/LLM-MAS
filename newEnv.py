@@ -414,8 +414,8 @@ class DisasterResponseEnv(gym.Env):
         动态更新状态，模拟环境的自然变化。
         """
         #基础设施提供的
-        self.state[4] += max(0,500 - self.state[3])
-        self.state[5] += max(0,500 - self.state[3])
+        # self.state[4] += max(0,500 - self.state[3])
+        # self.state[5] += max(0,500 - self.state[3])
         # #外来补给
         # self.state[6] += 100
         # self.state[7] += 100
@@ -486,4 +486,7 @@ class DisasterResponseEnv(gym.Env):
         """
         self.state = self._initialize_state()
         self.loop = 0
+        return self.state
+
+    def return_state(self):
         return self.state
